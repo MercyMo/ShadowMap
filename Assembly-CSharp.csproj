@@ -65,6 +65,7 @@
     <Compile Include="Assets\Scripts\FreeCamera.cs" />
     <Compile Include="Assets\Scripts\ShadowMap.cs" />
     <Compile Include="Assets\Scripts\ShadowMapBehaviour.cs" />
+    <Compile Include="Assets\Scripts\ShadowSpliter.cs" />
     <None Include="Assets\Shaders\ShadowCaster.shader" />
     <None Include="Assets\Shaders\ShadowReciver.shader" />
     <Reference Include="UnityEngine">
