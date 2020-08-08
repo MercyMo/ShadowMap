@@ -4,19 +4,12 @@ using UnityEngine;
 
 public class ShadowSpliter
 {
-    public ShadowSpliter(Camera viewCamera, Light light, Vector3 vCascadeRatio, int nCascadeCount)
+    public ShadowSpliter(Camera viewCamera, Light light)
     {
         m_ViewCamera = viewCamera;
         m_Light = light;
         m_vNearCorner = new Vector3[4];
         m_vFarCorner = new Vector3[4];
-        m_mShadowProjMatrices = new Matrix4x4[4];
-        m_mShadowViewMatrices = new Matrix4x4[4];
-        for(int i = 0; i < 4; i++)
-        {
-            m_mShadowViewMatrices[i] = Matrix4x4.identity;
-            m_mShadowProjMatrices[i] = Matrix4x4.identity;
-        }
     }
 
     public Vector4 CalculateDirectionalViewAndProjMatrix(int nSplitIndex, int nSplitCount, Vector3 vSplitRatio, int nShowdowMapSize,
@@ -25,16 +18,25 @@ public class ShadowSpliter
         float fNeadPlane = 0.0f;
         float fFarPlane = 0.0f;
         Vector4 vDistance = Vector4.one * (m_ViewCamera.farClipPlane - m_ViewCamera.nearClipPlane);
+        Vector4 vRatio = new Vector4(vSplitRatio.x, vSplitRatio.y, vSplitRatio.z);
 
         Vector4 vNearRatio = Vector4.zero;
         Vector4 vFarRatio = Vector4.zero;
         for (int i = 0; i < nSplitIndex; i++)
             vNearRatio[i] = vSplitRatio[i];
-        for (int i = 0; i < nSplitCount + 1; i++)
-            vFarRatio[i] = vSplitRatio[i];
+        if (nSplitCount == 3)
+        {
+            vFarRatio = new Vector4(0, 0, 0, 1);
+        }
+        else
+        {
+            for (int i = 0; i < nSplitIndex + 1; i++)
+                vFarRatio[i] = vSplitRatio[i];
+        }
+        
 
         fNeadPlane = Vector4.Dot(vNearRatio, vDistance) + m_ViewCamera.nearClipPlane;
-        fFarPlane = Vector4.Dot(vFarRatio, vDistance) + m_ViewCamera.nearClipPlane;
+        fFarPlane = m_ViewCamera.farClipPlane;// Vector4.Dot(vFarRatio, vDistance) + m_ViewCamera.nearClipPlane;
 
         Rect viewport = new Rect(0, 0, 1, 1);
         // View Space
@@ -63,7 +65,7 @@ public class ShadowSpliter
         center = m_Light.transform.up * x + m_Light.transform.right * y +
             m_Light.transform.forward * Vector3.Dot(center, m_Light.transform.forward);
 
-        mViewMatrix = Matrix4x4.LookAt(center, center + m_Light.transform.forward, m_Light.transform.up);
+        mViewMatrix = Matrix4x4.LookAt(center, center + m_Light.transform.forward, m_Light.transform.up).inverse;
         mProjMatrix = Matrix4x4.Ortho(-fRadius, fRadius, -fRadius, fRadius, -fRadius, fRadius);
 
         Vector3 vShadowOrigin = (mProjMatrix * mViewMatrix).MultiplyPoint(Vector3.zero);
@@ -73,6 +75,9 @@ public class ShadowSpliter
         roundedOffset = roundedOffset * 2.0f / nShowdowMapSize;
         roundedOffset.z = 0.0f;
         mProjMatrix = Matrix4x4.Translate(roundedOffset) * mProjMatrix;
+
+        Vector4 zAxis = mViewMatrix.GetRow(2);
+        mViewMatrix.SetRow(2, -zAxis);
         return new Vector4(center.x, center.y, center.z, fRadius);
     }
 
@@ -88,10 +93,6 @@ public class ShadowSpliter
 
     private Camera m_ViewCamera;
     private Light m_Light;
-    private float[] m_fSplitDistances;
     private Vector3[] m_vNearCorner;
     private Vector3[] m_vFarCorner;
-    //private Vector4[] m_vCullingSphere;
-    private Matrix4x4[] m_mShadowViewMatrices;
-    private Matrix4x4[] m_mShadowProjMatrices;
 }

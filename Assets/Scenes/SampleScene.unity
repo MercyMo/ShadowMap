@@ -318,8 +318,8 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
-  - component: {fileID: 963194229}
   - component: {fileID: 963194230}
+  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -401,14 +401,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 963194225}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55339f538ba7ba5438b9e3bada968b85, type: 3}
+  m_Script: {fileID: 11500000, guid: 41f25bf50a806ec458975f071ac4c23b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shadowMapSize: 2048
   viewCamera: {fileID: 963194227}
   mainLight: {fileID: 705507994}
-  shadowmapSize: 2048
-  projectType: 1
-  m_ShadowCaster:
+  shadowCasters:
   - {fileID: 2128384078}
   - {fileID: 806048116}
 --- !u!114 &963194230

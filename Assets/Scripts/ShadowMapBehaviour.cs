@@ -203,7 +203,15 @@ public class ShadowMapBehaviour : MonoBehaviour
 
         Matrix4x4 correct = Matrix4x4.identity;
         correct.m00 = correct.m11 = correct.m22 = correct.m03 = correct.m13 = correct.m23 = 0.5f;
-        Matrix4x4 world2Shadow = correct * m_ShadowProjMatrix * m_ShadowViewMatrix;
+        Matrix4x4 world2Shadow = m_ShadowProjMatrix * viewMatrix;
+        if (SystemInfo.usesReversedZBuffer)
+        {
+            world2Shadow.m20 *= (-1);
+            world2Shadow.m21 *= (-1);
+            world2Shadow.m22 *= (-1);
+            world2Shadow.m23 *= (-1);
+        }
+        world2Shadow = correct * world2Shadow;
         m_Cmd.SetGlobalMatrix("_ShadowMatrix", world2Shadow);
         m_Cmd.SetGlobalTexture("_ShadowMapCus", m_ShadowMap);
         float fTexelSize = 2.0f * m_fRadius / shadowmapSize;
