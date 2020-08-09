@@ -43,6 +43,10 @@
 			float _Bias;
             SamplerComparisonState sampler_ShadowMapCus;
 
+            float _BiasArray[4];
+            float4x4 _WorldToShadowAtlas[4];
+            float4 _CullingSphere[4];
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -57,27 +61,43 @@
             {
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
-                
-				
-				
+
                 float3 normal = normalize(i.worldNormal);
                 float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
-
 				col.rgb = col.rgb * saturate(dot(lightDir, normal)) * _LightColor0.rgb;
-
-                float bias = max(0.05f * (1.0f - dot(normal, lightDir)), 0.005f);
-
-				float3 normalBias = normal * _Bias;
-				float4 worldPos = i.worldPos;
-				worldPos.xyz += normalBias;
-
-				float4 lightPos = mul(_ShadowMatrix, worldPos);
-				float3 lightPosProj = lightPos.xyz / lightPos.w;
-				lightPosProj.z += 0.005f;
-				//float fAtten = 0;
-                float fAtten = _ShadowMapCus.SampleCmpLevelZero(sampler_ShadowMapCus, lightPosProj.xy, lightPosProj.z, 1);
-				//fAtten /= 9.0f;
-				col.rgb *= fAtten;
+    //            float bias = max(0.05f * (1.0f - dot(normal, lightDir)), 0.005f);
+				//float3 normalBias = normal * _Bias;
+				//float4 worldPos = i.worldPos;
+				//worldPos.xyz += normalBias;
+				//float4 lightPos = mul(_ShadowMatrix, worldPos);
+				//float3 lightPosProj = lightPos.xyz / lightPos.w;
+				//lightPosProj.z += 0.005f;
+				////float fAtten = 0;
+    //            float fAtten = _ShadowMapCus.SampleCmpLevelZero(sampler_ShadowMapCus, lightPosProj.xy, lightPosProj.z, 1);
+				////fAtten /= 9.0f;
+				//col.rgb *= fAtten;
+                int index = 0;
+                float fAtten;
+                for (; index < 4; index++)
+                {
+                    float3 dir = i.worldPos.xyz - _CullingSphere[index].xyz;
+                    float distance = dot(dir, dir);
+                    if (distance < _CullingSphere[index].w)
+                        break;
+                }
+                if (index == 4)
+                    fAtten = 1.0f;
+                else
+                {
+                    float normalBias = normal * _BiasArray[index];
+                    float4 worldPos = i.worldPos;
+                    worldPos.xyz += normalBias;
+                    float4 lightPos = mul(_WorldToShadowAtlas[index], worldPos);
+                    float3 lightPosProj = lightPos.xyz / lightPos.w;
+                    lightPosProj.z += 0.005f;
+                    fAtten = _ShadowMapCus.SampleCmpLevelZero(sampler_ShadowMapCus, lightPosProj.xy, lightPosProj.z);
+                }
+                col.rgb = index;// *0.25f;
                 return col;// - frac(fAtten);
             }
             ENDCG

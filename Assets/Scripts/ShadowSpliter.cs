@@ -24,7 +24,7 @@ public class ShadowSpliter
         Vector4 vFarRatio = Vector4.zero;
         for (int i = 0; i < nSplitIndex; i++)
             vNearRatio[i] = vSplitRatio[i];
-        if (nSplitCount == 3)
+        if (nSplitCount == 4)
         {
             vFarRatio = new Vector4(0, 0, 0, 1);
         }
@@ -57,6 +57,8 @@ public class ShadowSpliter
 
         Vector3 center = CalLineIntersect(center01, dir01, center02, dir02);
         float fRadius = Vector3.Distance(v0, center);
+
+        nShowdowMapSize = (nSplitCount == 1) ? nShowdowMapSize : Mathf.FloorToInt(nShowdowMapSize * 0.5f);
 
         center = m_ViewCamera.transform.TransformPoint(center);
         float x = Mathf.Ceil(Vector3.Dot(center, m_Light.transform.up) * nShowdowMapSize / fRadius) * fRadius / nShowdowMapSize;
