@@ -77,14 +77,18 @@ public class ShadowMapDrawer : MonoBehaviour
             m_Cmd.SetRenderTarget(m_ShadowMap, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
             m_Cmd.ClearRenderTarget(true, false, Color.clear);
             Vector3 cascadeRatio = new Vector3(0.1f, 0.2f, 0.3f);
-            for(int i = 0; i < 4; i++)
+            int nSplit = 2;
+            int nSplitSize = shadowMapSize / nSplit;
+
+
+            for (int i = 0; i < 4; i++)
             {
                 Vector4 sphere = m_Spliter.CalculateDirectionalViewAndProjMatrix(i, 4, cascadeRatio, shadowMapSize,
                     out Matrix4x4 mViewMatrix, out Matrix4x4 mProjMatrix);
 
-                Vector2 offset = new Vector2(i % 2, Mathf.Floor(i / 2));
+                Vector2 offset = new Vector2(i % nSplit, Mathf.Floor(i / nSplit));
 
-                m_Cmd.SetViewport(new Rect(offset.x * 1024, offset.y * 1024, 1024, 1024));
+                m_Cmd.SetViewport(new Rect(offset.x * nSplitSize, offset.y * nSplitSize, nSplitSize, nSplitSize));
                 m_Cmd.SetViewProjectionMatrices(mViewMatrix, mProjMatrix);
                 foreach(var renderer in shadowCasters)
                 {
@@ -100,10 +104,10 @@ public class ShadowMapDrawer : MonoBehaviour
                 mShadow2Atlas.m00 = mShadow2Atlas.m11 = mShadow2Atlas.m22 = mShadow2Atlas.m03 = mShadow2Atlas.m13 = mShadow2Atlas.m23 = 0.5f;
                 mShadow2Atlas = Matrix4x4.TRS(new Vector3(offset.x * 0.5f, offset.y * 0.5f, 0.0f),
                     Quaternion.identity,
-                    new Vector3(0.5f, 0.5f, 1.0f)) * mShadow2Atlas;
+                    new Vector3(1.0f / nSplit, 1.0f / nSplit, 1.0f)) * mShadow2Atlas;
                 m_World2Shadows[i] = mShadow2Atlas * world2Shadow;
 
-                float fTexelSize = 2.0f * sphere.w / 1024.0f;
+                float fTexelSize = 2.0f * sphere.w / nSplitSize;
                 m_Bias[i] = fTexelSize * 1.4142136f;
 
                 sphere.w = sphere.w * sphere.w;
@@ -124,4 +128,5 @@ public class ShadowMapDrawer : MonoBehaviour
     private Vector4[] m_CullingSpheres = new Vector4[4];
     private float[] m_Bias = new float[4];
     private Matrix4x4[] m_World2Shadows = new Matrix4x4[4];
+
 }

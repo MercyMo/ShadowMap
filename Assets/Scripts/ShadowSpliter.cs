@@ -24,9 +24,10 @@ public class ShadowSpliter
         Vector4 vFarRatio = Vector4.zero;
         for (int i = 0; i < nSplitIndex; i++)
             vNearRatio[i] = vSplitRatio[i];
-        if (nSplitCount == 4)
+        if (nSplitIndex == nSplitCount - 1)
         {
-            vFarRatio = new Vector4(0, 0, 0, 1);
+            vFarRatio = new Vector4(1, 0, 0, 0);
+       
         }
         else
         {
@@ -36,7 +37,7 @@ public class ShadowSpliter
         
 
         fNeadPlane = Vector4.Dot(vNearRatio, vDistance) + m_ViewCamera.nearClipPlane;
-        fFarPlane = m_ViewCamera.farClipPlane;// Vector4.Dot(vFarRatio, vDistance) + m_ViewCamera.nearClipPlane;
+        fFarPlane = Vector4.Dot(vFarRatio, vDistance) + m_ViewCamera.nearClipPlane;
 
         Rect viewport = new Rect(0, 0, 1, 1);
         // View Space
@@ -71,7 +72,7 @@ public class ShadowSpliter
         mProjMatrix = Matrix4x4.Ortho(-fRadius, fRadius, -fRadius, fRadius, -fRadius, fRadius);
 
         Vector3 vShadowOrigin = (mProjMatrix * mViewMatrix).MultiplyPoint(Vector3.zero);
-        vShadowOrigin = vShadowOrigin * nShowdowMapSize * 0.5f;
+        vShadowOrigin = vShadowOrigin * nShowdowMapSize / 2.0f;
         Vector3 roundedOrigin = new Vector3(Mathf.Round(vShadowOrigin.x), Mathf.Round(vShadowOrigin.y), Mathf.Round(vShadowOrigin.z));
         Vector3 roundedOffset = roundedOrigin - vShadowOrigin;
         roundedOffset = roundedOffset * 2.0f / nShowdowMapSize;

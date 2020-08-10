@@ -6,7 +6,7 @@ It is a working repository for ShadowMap technique implemented in Unity.
 
 - [x] Original ShadowMap
 - [ ] Percentage Closer Soft Shadows
-- [ ] Cascade ShadowMap
+- [x] Cascade ShadowMap
 - [ ] Resolve Cascade in Screen Space
 
 

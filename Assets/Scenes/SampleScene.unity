@@ -206,13 +206,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_LocalRotation: {x: 0.37209696, y: 0, z: 0, w: 0.92819387}
+  m_LocalRotation: {x: 0.3420201, y: 0, z: 0, w: 0.9396927}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 43.69, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 40, y: 0, z: 0}
 --- !u!1 &806048114
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,7 +360,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 10
-  field of view: 24
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -404,7 +404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f25bf50a806ec458975f071ac4c23b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shadowMapSize: 2048
+  shadowMapSize: 1024
   viewCamera: {fileID: 963194227}
   mainLight: {fileID: 705507994}
   shadowCasters:
