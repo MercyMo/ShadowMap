@@ -43,10 +43,15 @@
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
 				#if UNITY_REVERSED_Z
-				o.vertex.z = min(o.vertex.z, o.vertex.w * UNITY_NEAR_CLIP_VALUE);
+					o.vertex.z = min(o.vertex.z, o.vertex.w * UNITY_NEAR_CLIP_VALUE);
 				#else
-				o.vertex.z = max(o.vertex.z, o.vertex.w * UNITY_NEAR_CLIP_VALUE);
+					o.vertex.z = max(o.vertex.z, o.vertex.w * UNITY_NEAR_CLIP_VALUE);
                 #endif
+
+				float offsetX = -(1 + o.vertex.x / o.vertex.w);
+				float offsetY = -(1 + o.vertex.y / o.vertex.w);
+				//if ((o.vertex.x / o.vertex.w) < -1 || (o.vertex.x / o.vertex.w) > 1)
+
 
 				o.depth = o.vertex.zw;
                 return o;
