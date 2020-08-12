@@ -47,19 +47,12 @@
 				#else
 					o.vertex.z = max(o.vertex.z, o.vertex.w * UNITY_NEAR_CLIP_VALUE);
                 #endif
-
-				float offsetX = -(1 + o.vertex.x / o.vertex.w);
-				float offsetY = -(1 + o.vertex.y / o.vertex.w);
-				//if ((o.vertex.x / o.vertex.w) < -1 || (o.vertex.x / o.vertex.w) > 1)
-
-
 				o.depth = o.vertex.zw;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // sample the texture
                 return i.depth.x / i.depth.y;
             }
             ENDCG

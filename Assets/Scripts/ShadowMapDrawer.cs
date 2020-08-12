@@ -9,7 +9,9 @@ public class ShadowMapDrawer : MonoBehaviour
     public Camera viewCamera;
     public Light mainLight;
     public Renderer[] shadowCasters;
-    
+    public int bias;
+    public int slopBias;
+
     private ShadowSpliter m_Spliter;
     private CommandBuffer m_Cmd;
     private RenderTexture m_ShadowMap;
@@ -90,7 +92,8 @@ public class ShadowMapDrawer : MonoBehaviour
 
                 m_Cmd.SetViewport(new Rect(offset.x * nSplitSize, offset.y * nSplitSize, nSplitSize, nSplitSize));
                 m_Cmd.SetViewProjectionMatrices(mViewMatrix, mProjMatrix);
-                foreach(var renderer in shadowCasters)
+                m_Cmd.SetGlobalDepthBias(bias, slopBias);
+                foreach (var renderer in shadowCasters)
                 {
                     m_Cmd.DrawRenderer(renderer, m_ShadowCasterMat);
                 }
@@ -113,7 +116,7 @@ public class ShadowMapDrawer : MonoBehaviour
                 sphere.w = sphere.w * sphere.w;
                 m_CullingSpheres[i] = sphere;
             }
-
+            m_Cmd.SetGlobalDepthBias(0, 0);
             m_Cmd.SetGlobalTexture("_ShadowMapCus", m_ShadowMap);
             m_Cmd.SetGlobalFloatArray("_BiasArray", m_Bias);
             m_Cmd.SetGlobalMatrixArray("_WorldToShadowAtlas", m_World2Shadows);

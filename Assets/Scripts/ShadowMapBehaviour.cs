@@ -86,6 +86,18 @@ public class ShadowMapBehaviour : MonoBehaviour
                 min = Vector3.one * (-fRadius);
                 max = Vector3.one * fRadius;
 
+                m_ShadowViewMatrix = Matrix4x4.LookAt(m_Center, m_Center + mainLight.transform.forward, mainLight.transform.up).inverse;
+                m_ShadowProjMatrix = Matrix4x4.Ortho(min.x, max.x, min.y, max.y, min.z, max.z);
+
+                Vector3 shadowOrigin = (m_ShadowProjMatrix * m_ShadowViewMatrix).MultiplyPoint(Vector3.zero);
+                shadowOrigin = shadowOrigin * shadowmapSize / 2.0f;
+
+                Vector3 roundedOrigin = new Vector3(Mathf.Round(shadowOrigin.x), Mathf.Round(shadowOrigin.y), Mathf.Round(shadowOrigin.z));
+                Vector3 roundOffset = roundedOrigin - shadowOrigin;
+                roundOffset = roundOffset * 2.0f / shadowmapSize;
+                roundOffset.z = 0.0f;
+                m_ShadowProjMatrix = Matrix4x4.Translate(roundOffset) * m_ShadowProjMatrix;
+                Debug.Log("Sphere Radio " + fRadius);
                 #endregion
             }
             else if (projectType == XE_PROJECT_TYPE.emAABB)
@@ -155,49 +167,12 @@ public class ShadowMapBehaviour : MonoBehaviour
 
                 m_ShadowViewMatrix = Matrix4x4.LookAt(center, mainLight.transform.forward + center, mainLight.transform.up).inverse;
                 float fHalfMaxDist = maxDist * 0.5f;
-                m_ShadowProjMatrix = Matrix4x4.Ortho(-fHalfMaxDist, fHalfMaxDist, -fHalfMaxDist, fHalfMaxDist, 0, maxZ - minZ);
+                float fDepth = maxZ - minZ;
+                m_ShadowProjMatrix = Matrix4x4.Ortho(-fHalfMaxDist, fHalfMaxDist, -fHalfMaxDist, fHalfMaxDist, 0, fDepth);
+                Debug.Log("AABB " + fHalfMaxDist);
 
-                //// Find Min & Max
-                //for(int i = 0; i < 4; i++)
-                //{
-                //    min = Vector3.Min(m_FarCorner[i], Vector3.Min(m_NearCorner[i], min));
-                //    max = Vector3.Max(m_FarCorner[i], Vector3.Max(m_NearCorner[i], max));
-                //}
-
-                //m_Center = 0.5f * (min + max);
-                //m_Center = light2World.MultiplyPoint(m_Center);// light to world
-
-                m_NearCorner[0] = new Vector3(minX, minY, minZ);
-                m_NearCorner[1] = new Vector3(maxX, minY, minZ);
-                m_NearCorner[2] = new Vector3(maxX, maxY, minZ);
-                m_NearCorner[3] = new Vector3(minX, maxY, minZ);
-
-                m_FarCorner[0] = new Vector3(minX, minY, maxZ);
-                m_FarCorner[1] = new Vector3(maxX, minY, maxZ);
-                m_FarCorner[2] = new Vector3(maxX, maxY, maxZ);
-                m_FarCorner[3] = new Vector3(minX, maxY, maxZ);
-
-                // AABB in world space
-                for (int i = 0; i < 4; i++)
-                {
-                    m_NearCorner[i] = light2World.MultiplyPoint(m_NearCorner[i]);
-                    m_FarCorner[i] = light2World.MultiplyPoint(m_FarCorner[i]);
-                }
                 #endregion
             }
-
-            // Remove shimmering edge
-            //m_ShadowViewMatrix = Matrix4x4.LookAt(m_Center, m_Center + mainLight.transform.forward, mainLight.transform.up).inverse;
-            //m_ShadowProjMatrix = Matrix4x4.Ortho(min.x, max.x, min.y, max.y, min.z, max.z);
-
-            //Vector3 shadowOrigin = (m_ShadowProjMatrix * m_ShadowViewMatrix).MultiplyPoint(Vector3.zero);
-            //shadowOrigin = shadowOrigin * shadowmapSize / 2.0f;
-
-            //Vector3 roundedOrigin = new Vector3(Mathf.Round(shadowOrigin.x), Mathf.Round(shadowOrigin.y), Mathf.Round(shadowOrigin.z));
-            //Vector3 roundOffset = roundedOrigin - shadowOrigin;
-            //roundOffset = roundOffset * 2.0f / shadowmapSize;
-            //roundOffset.z = 0.0f;
-            //m_ShadowProjMatrix = Matrix4x4.Translate(roundOffset) * m_ShadowProjMatrix;
             return true;
         }
         else
