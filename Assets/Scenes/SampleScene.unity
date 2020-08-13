@@ -502,6 +502,7 @@ MonoBehaviour:
   mainLight: {fileID: 705507994}
   shadowCasters:
   - {fileID: 806048116}
+  - {fileID: 2128384078}
   bias: 0
   slopBias: 0
 --- !u!114 &963194230
@@ -537,7 +538,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!135 &2128384077
 SphereCollider:
   m_ObjectHideFlags: 0

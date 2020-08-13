@@ -103,7 +103,7 @@ public class ShadowSpliter
         float fHalfLen = 0.5F * fMaxLen;
         mProjMatrix = Matrix4x4.Ortho(-fHalfLen, fHalfLen, -fHalfLen, fHalfLen, 0, max.z - min.z);
         float fHalfLen2 = fHalfLen * fHalfLen;
-        return new Vector4(center.x, center.y, center.z, Mathf.Sqrt(fHalfLen2 + fHalfLen2));
+        return new Vector4(fHalfLen, center.y, max.z - min.z, fFarPlane);
     }
 
 

@@ -113,7 +113,7 @@ public class ShadowMapDrawer : MonoBehaviour
                 float fTexelSize = 2.0f * sphere.w / nSplitSize;
                 m_Bias[i] = fTexelSize * 1.4142136f;
 
-                sphere.w = sphere.w * sphere.w;
+                //sphere.w = sphere.w * sphere.w;
                 m_CullingSpheres[i] = sphere;
             }
             m_Cmd.SetGlobalDepthBias(0, 0);
@@ -132,4 +132,5 @@ public class ShadowMapDrawer : MonoBehaviour
     private float[] m_Bias = new float[4];
     private Matrix4x4[] m_World2Shadows = new Matrix4x4[4];
 
+    private Vector3[] m_Centers = new Vector3[4];
 }
