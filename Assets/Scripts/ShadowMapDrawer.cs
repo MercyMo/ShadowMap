@@ -29,6 +29,7 @@ public class ShadowMapDrawer : MonoBehaviour
 
             m_ShadowMap = new RenderTexture(shadowMapSize, shadowMapSize, 32, RenderTextureFormat.Shadowmap);
             m_ShadowMap.filterMode = FilterMode.Bilinear;
+            m_ShadowMap.wrapMode = TextureWrapMode.Clamp;
 
             m_ShadowCasterMat = new Material(Shader.Find("Unlit/ShadowCaster"));
             m_ShadowCasterMat.hideFlags = HideFlags.HideAndDontSave;
@@ -90,9 +91,12 @@ public class ShadowMapDrawer : MonoBehaviour
 
                 Vector2 offset = new Vector2(i % nSplit, Mathf.Floor(i / nSplit));
 
+                
                 m_Cmd.SetViewport(new Rect(offset.x * nSplitSize, offset.y * nSplitSize, nSplitSize, nSplitSize));
+                m_Cmd.EnableScissorRect(new Rect(offset.x * nSplitSize + 4, offset.y * nSplitSize + 4, nSplitSize - 8, nSplitSize - 8));
                 m_Cmd.SetViewProjectionMatrices(mViewMatrix, mProjMatrix);
                 m_Cmd.SetGlobalDepthBias(bias, slopBias);
+                
                 foreach (var renderer in shadowCasters)
                 {
                     m_Cmd.DrawRenderer(renderer, m_ShadowCasterMat);
@@ -121,6 +125,7 @@ public class ShadowMapDrawer : MonoBehaviour
             m_Cmd.SetGlobalFloatArray("_BiasArray", m_Bias);
             m_Cmd.SetGlobalMatrixArray("_WorldToShadowAtlas", m_World2Shadows);
             m_Cmd.SetGlobalVectorArray("_CullingSphere", m_CullingSpheres);
+            m_Cmd.DisableScissorRect();
             Graphics.ExecuteCommandBuffer(m_Cmd);
             m_Cmd.Clear();
         }
